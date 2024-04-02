@@ -5,10 +5,19 @@
         <item name="colorOnSecondary">@color/gray_white</item>
         <item name="colorSecondary">@color/blue_white</item>
         <item name="backgroundColor">@color/white</item>
-    </style>
-
-    <style name="Theme.Checkers" parent="Base.Theme.Checkers">
+        <item name="android:statusBarColor">@color/white</item>
         <item name="colorPrimary">@color/blue</item>
         <item name="android:textSize">16sp</item>
+        <item name="android:navigationBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+
+    <style name="MainTheme" parent="Base.Theme.Checkers">
+        <item name="android:navigationBarColor">@color/blue_white</item>
+    </style>
+
+    <style name="GameTheme" parent="Base.Theme.Checkers">
+        <item name="android:navigationBarColor">@color/white</item>
     </style>
 </resources>

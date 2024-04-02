@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".ui.MainActivity"
     android:background="@drawable/background_main"
     android:paddingVertical="16dp"
     android:paddingHorizontal="72dp"
@@ -14,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/label"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp"
+        android:contentDescription="@string/logo_description" />
 
     <TextView
         android:layout_width="match_parent"
@@ -40,5 +41,6 @@
         android:background="@android:color/transparent"
         android:textAppearance="@style/BlueText"
         android:text="@string/resume_game"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        android:visibility="gone"/>
 </LinearLayout>

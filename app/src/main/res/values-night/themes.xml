@@ -5,5 +5,16 @@
         <item name="colorOnSecondary">@color/gray_black</item>
         <item name="colorSecondary">@color/blue_black</item>
         <item name="backgroundColor">@color/black</item>
+        <item name="colorPrimary">@color/blue</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:statusBarColor">@color/black</item>
+    </style>
+
+    <style name="MainTheme" parent="Base.Theme.Checkers">
+        <item name="android:navigationBarColor">@color/blue_black</item>
+    </style>
+
+    <style name="GameTheme" parent="Base.Theme.Checkers">
+        <item name="android:navigationBarColor">@color/black</item>
     </style>
 </resources>
