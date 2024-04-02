@@ -1,9 +1,14 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <!-- Base application theme. -->
     <style name="Base.Theme.Checkers" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnSecondary">@color/gray_white</item>
+        <item name="colorSecondary">@color/blue_white</item>
+        <item name="backgroundColor">@color/white</item>
     </style>
 
-    <style name="Theme.Checkers" parent="Base.Theme.Checkers" />
+    <style name="Theme.Checkers" parent="Base.Theme.Checkers">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>

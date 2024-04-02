@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="WhitText">
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="BlueText">
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+        <item name="android:textColor">@color/blue</item>
+    </style>
+
+    <style name="GrayText">
+        <item name="android:fontFamily">@font/montserrat</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+    </style>
+
+</resources>
