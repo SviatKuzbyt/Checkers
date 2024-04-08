@@ -1,6 +1,8 @@
 package ua.sviatkuzbyt.checkers.ui.game
 
 import android.os.Bundle
+import android.view.Gravity
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import ua.sviatkuzbyt.checkers.data.SaveGameFileManager
@@ -11,9 +13,12 @@ import java.util.Calendar
 import java.util.Locale
 
 class GameActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityGameBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityGameBinding.inflate(layoutInflater)
+        binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val file = SaveGameFileManager(this)
@@ -26,15 +31,18 @@ class GameActivity : AppCompatActivity() {
             tempText
         }
 
-        binding.tempText.text = text
-
-        binding.tempText.setOnClickListener {
-            file.delete()
-            isResumeGame = false
-            Toast.makeText(this, "Видалено", Toast.LENGTH_SHORT).show()
-        }
     }
 
+    private fun rotateGameToolBar(rotate: Float, gravity: Int) {
+        binding.gameToolBar.apply {
+            rotation = rotate
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                gravity
+            )
+        }
+    }
     private fun formatDate(milliseconds: Long): String {
         val sdf = SimpleDateFormat("dd MMM yyyy HH:mm:ss", Locale.getDefault())
         val calendar = Calendar.getInstance()

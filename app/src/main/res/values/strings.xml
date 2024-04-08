@@ -1,7 +1,11 @@
 <resources>
-    <string name="app_name">Checkers</string>
+    <string name="app_name">Шашки</string>
     <string name="new_game">Нова гра</string>
     <string name="resume_game">Відновити гру</string>
     <string name="about">Курсовий проєкт Кузбита Святослава</string>
     <string name="logo_description">Логотип \"Шашки\"</string>
+    <string name="close_the_game">Закрити гру</string>
+    <string name="give_up">Здатися</string>
+    <string name="playerOne">Хід 1 гравця</string>
+    <string name="playerTwo">Хід 2 гравця</string>
 </resources>
