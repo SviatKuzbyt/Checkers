@@ -1,20 +1,36 @@
 package ua.sviatkuzbyt.checkers.ui.game.elements
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.util.AttributeSet
 import android.view.View
-import androidx.core.content.ContextCompat
 import ua.sviatkuzbyt.checkers.R
+import ua.sviatkuzbyt.checkers.ui.game.CellAction
 
-class CellView: View {
-    constructor(context: Context): super(context)
-    constructor(context: Context, attrs: AttributeSet): super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int): super(context, attrs, defStyleAttr)
-
-    private var type = EMPTY_WHITE
+@SuppressLint("ViewConstructor")
+class CellView(
+    context: Context,
+    private var type: Int,
+    var cellId: Int,
+    private var action: CellAction
+) : View(context) {
 
     init {
         setBackground()
+        setClick()
+    }
+
+    private fun setClick(){
+        setOnClickListener {
+            when(type){
+                WHITE_CHECKER -> action.whiteStep(cellId)
+                BLACK_CHECKER -> action.blackStep(cellId)
+                MOVE -> action.setMove(cellId)
+            }
+        }
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        super.onMeasure(widthMeasureSpec, widthMeasureSpec)
     }
 
     fun setType(type: Int){
@@ -23,10 +39,11 @@ class CellView: View {
         invalidate()
     }
 
+    fun getViewId() = cellId
+
     private fun setBackground(){
         when(type){
-            EMPTY_WHITE -> setBackgroundColor(ContextCompat.getColor(context, R.color.blue_white))
-            EMPTY_BLACK -> setBackgroundColor(ContextCompat.getColor(context, R.color.blue_black))
+            EMPTY_BLACK -> setBackgroundResource(R.drawable.cell_black_empty)
             MOVE -> setBackgroundResource(R.drawable.cell_move)
             WHITE_CHECKER -> setBackgroundResource(R.drawable.cell_whie)
             BLACK_CHECKER -> setBackgroundResource(R.drawable.cell_black)
@@ -38,7 +55,6 @@ class CellView: View {
     fun getType() = type
 
     companion object{
-        const val EMPTY_WHITE = 0
         const val EMPTY_BLACK = 1
         const val MOVE = 2
         const val WHITE_CHECKER = 3
