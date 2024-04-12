@@ -1,9 +1,11 @@
 package ua.sviatkuzbyt.checkers.ui.game
 
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.FrameLayout
 import android.widget.TableRow
 import androidx.appcompat.app.AppCompatActivity
+import ua.sviatkuzbyt.checkers.R
 import ua.sviatkuzbyt.checkers.databinding.ActivityGameBinding
 import ua.sviatkuzbyt.checkers.ui.game.elements.CellView
 import ua.sviatkuzbyt.checkers.ui.game.elements.WhiteCellView
@@ -16,7 +18,8 @@ class GameActivity : AppCompatActivity(), CellAction {
     private var blackCount = 12
     private var movesPosition = mutableListOf<Int>()
     private var targetPosition = -1
-    private var firstPlayer = true
+    private var player = CellView.WHITE_CHECKER
+    private val takeCandidates = mutableMapOf<Int, MutableList<Int>>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,15 +43,15 @@ class GameActivity : AppCompatActivity(), CellAction {
             CellView(this, CellView.BLACK_CHECKER, 36, this),
             CellView(this, CellView.BLACK_CHECKER, 38, this),
 
-            CellView(this, CellView.EMPTY_BLACK, 41, this),
-            CellView(this, CellView.EMPTY_BLACK, 43, this),
-            CellView(this, CellView.EMPTY_BLACK, 45, this),
-            CellView(this, CellView.EMPTY_BLACK, 47, this),
+            CellView(this, CellView.EMPTY, 41, this),
+            CellView(this, CellView.EMPTY, 43, this),
+            CellView(this, CellView.EMPTY, 45, this),
+            CellView(this, CellView.EMPTY, 47, this),
 
-            CellView(this, CellView.EMPTY_BLACK, 52, this),
-            CellView(this, CellView.EMPTY_BLACK, 54, this),
-            CellView(this, CellView.EMPTY_BLACK, 56, this),
-            CellView(this, CellView.EMPTY_BLACK, 58, this),
+            CellView(this, CellView.EMPTY, 52, this),
+            CellView(this, CellView.EMPTY, 54, this),
+            CellView(this, CellView.EMPTY, 56, this),
+            CellView(this, CellView.EMPTY, 58, this),
 
             CellView(this, CellView.WHITE_CHECKER, 61, this),
             CellView(this, CellView.WHITE_CHECKER, 63, this),
@@ -69,18 +72,6 @@ class GameActivity : AppCompatActivity(), CellAction {
         createCheckersBoard(gameList)
     }
 
-//    private fun createCheckersBoard(list: List<CellView>) {
-//        var position = 0
-//        for (row in 1..8){
-//            val tableRow = TableRow(this)
-//            for(column in 1..8){
-//                tableRow.addView(list[position])
-//                position++
-//            }
-//            binding.checkerboard.addView(tableRow)
-//        }
-//    }
-
     private fun createCheckersBoard(list: List<CellView>){
         var position = 0
         var firstWhite = true
@@ -100,8 +91,11 @@ class GameActivity : AppCompatActivity(), CellAction {
             firstWhite = !firstWhite
         }
     }
+    private fun rotateGameToolBar() {
+        val rotate = if (player == CellView.WHITE_CHECKER) 0f else 180f
+        val gravity = if(player == CellView.WHITE_CHECKER) Gravity.TOP else Gravity.BOTTOM
+        val text = if (player == CellView.WHITE_CHECKER) R.string.playerOne else R.string.playerTwo
 
-    private fun rotateGameToolBar(rotate: Float, gravity: Int) {
         binding.gameToolBar.apply {
             rotation = rotate
             layoutParams = FrameLayout.LayoutParams(
@@ -110,31 +104,59 @@ class GameActivity : AppCompatActivity(), CellAction {
                 gravity
             )
         }
+        binding.playerText.setText(text)
     }
 
     override fun whiteStep(id: Int) {
         clearMoves()
         targetPosition = gameList.indexOfFirst { it.cellId == id}
-        if (targetPosition != -1 && firstPlayer){
-            move(id - 9)
-            move(id - 11)
+        if (targetPosition != -1 && player == CellView.WHITE_CHECKER){
+            moveTake(id, CellView.BLACK_CHECKER)
+            move(id, - 9)
+            move(id, - 11)
         }
     }
 
+    private fun moveTake(id: Int, checker: Int, list: MutableList<Int> = mutableListOf()){
+        checkChecker(id, 11, checker, list.toMutableList())
+        checkChecker(id, 9, checker, list.toMutableList())
+        checkChecker(id, -11, checker, list.toMutableList())
+        checkChecker(id, -9, checker, list.toMutableList())
+    }
+
+    private fun checkChecker(id: Int, step: Int, checker: Int, list: MutableList<Int>){
+        gameList.indexOfFirst { it.cellId == id + step}.let { it ->
+            if (it != -1 && gameList[it].getType() == checker){
+                gameList.indexOfFirst { it.cellId == id + step + step}.let{ it2 ->
+                    if (it2 != -1 && gameList[it2].getType() == CellView.EMPTY){
+                        movesPosition.add(it2)
+                        gameList[it2].setType(CellView.MOVE)
+                        list.add(it)
+                        takeCandidates[it2] = list
+
+                        moveTake(id + step + step, checker, list)
+                    }
+                }
+            }
+        }
+    }
     private fun clearMoves(){
         movesPosition.forEach {
             if(gameList[it].getType() == CellView.MOVE){
-                gameList[it].setType(CellView.EMPTY_BLACK)
+                gameList[it].setType(CellView.EMPTY)
             }
         }
         movesPosition.clear()
+        takeCandidates.clear()
     }
 
-    private fun move(id: Int){
-        gameList.indexOfFirst { it.cellId == id}.run {
-            if (this != -1 && gameList[this].getType() == CellView.EMPTY_BLACK){
-                gameList[this].setType(CellView.MOVE)
-                movesPosition.add(this)
+    private fun move(id: Int, addStep: Int){
+        gameList.indexOfFirst { it.cellId == id + addStep}.run {
+            if (this != -1){
+                if (gameList[this].getType() == CellView.EMPTY){
+                    gameList[this].setType(CellView.MOVE)
+                    movesPosition.add(this)
+                }
             }
         }
     }
@@ -142,30 +164,42 @@ class GameActivity : AppCompatActivity(), CellAction {
     override fun blackStep(id: Int) {
         clearMoves()
         targetPosition = gameList.indexOfFirst { it.cellId == id}
-        if (targetPosition != -1 && !firstPlayer){
-            move(id + 9)
-            move(id + 11)
+        if (targetPosition != -1 && player == CellView.BLACK_CHECKER){
+            moveTake(id, CellView.WHITE_CHECKER)
+            move(id, 9)
+            move(id,11)
         }
-
     }
 
     override fun setMove(id: Int) {
         if (targetPosition != -1){
-            gameList[targetPosition].setType(CellView.EMPTY_BLACK)
+            gameList[targetPosition].setType(CellView.EMPTY)
             targetPosition = -1
         }
 
         gameList.indexOfFirst { it.cellId == id}.run {
             if (this != -1){
-                gameList[this].setType(
-                    if(firstPlayer) CellView.WHITE_CHECKER
-                    else CellView.BLACK_CHECKER
-                )
-                firstPlayer = !firstPlayer
+                gameList[this].setType(player)
+            }
+
+            takeCandidates[this]?.let {
+                it.forEach { n ->
+                    gameList[n].setType(CellView.EMPTY)
+                    if (player == CellView.WHITE_CHECKER)
+                        blackCount --
+                    else whiteCount --
+                    checkWin()
+                }
             }
         }
 
+        player =
+            if (player == CellView.WHITE_CHECKER) CellView.BLACK_CHECKER
+            else CellView.WHITE_CHECKER
+        rotateGameToolBar()
         clearMoves()
 
     }
+
+    fun checkWin(){}
 }

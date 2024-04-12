@@ -39,11 +39,9 @@ class CellView(
         invalidate()
     }
 
-    fun getViewId() = cellId
-
     private fun setBackground(){
         when(type){
-            EMPTY_BLACK -> setBackgroundResource(R.drawable.cell_black_empty)
+            EMPTY -> setBackgroundResource(R.drawable.cell_black_empty)
             MOVE -> setBackgroundResource(R.drawable.cell_move)
             WHITE_CHECKER -> setBackgroundResource(R.drawable.cell_whie)
             BLACK_CHECKER -> setBackgroundResource(R.drawable.cell_black)
@@ -55,7 +53,7 @@ class CellView(
     fun getType() = type
 
     companion object{
-        const val EMPTY_BLACK = 1
+        const val EMPTY = 1
         const val MOVE = 2
         const val WHITE_CHECKER = 3
         const val BLACK_CHECKER = 4
