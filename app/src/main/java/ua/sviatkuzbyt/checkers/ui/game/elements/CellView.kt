@@ -36,7 +36,6 @@ class CellView(
     fun setType(type: Int){
         data.type = type
         setBackground()
-        invalidate()
     }
 
     private fun setBackground(){
@@ -51,6 +50,12 @@ class CellView(
     }
 
     fun getType() = data.type
+
+    fun getPlayer(): Int{
+        return if (data.type == WHITE_CHECKER || data.type == WHITE_QUEEN)
+            WHITE_PLAYER
+        else BLACK_PLAYER
+    }
 
     companion object{
         const val EMPTY = 1

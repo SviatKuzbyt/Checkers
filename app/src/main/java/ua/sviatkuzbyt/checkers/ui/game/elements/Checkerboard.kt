@@ -6,7 +6,6 @@ import android.widget.TableRow
 import ua.sviatkuzbyt.checkers.data.elements.GameData
 import ua.sviatkuzbyt.checkers.ui.game.CellAction
 
-
 class Checkerboard(
     private val table: TableLayout,
     private val data: GameData,
@@ -16,7 +15,8 @@ class Checkerboard(
     private val gameMap = hashMapOf<Int, CellView>()
     private var possibleMovies = mutableListOf<CellView>()
     private var targetPosition = NO_ITEM
-    private val takeCandidates = hashMapOf<Int, MutableList<Int>>()
+    private val takeCandidates = hashMapOf<Int, MutableSet<CellView>>()
+
     init {
         createTable()
     }
@@ -53,8 +53,43 @@ class Checkerboard(
             clearMoves()
             targetPosition = id
 
+            possibleTakes(id, mutableSetOf())
             possibleStep(id+pushSizeOne)
             possibleStep(id+pushSizeTwo)
+        }
+    }
+
+    private fun clearMoves() {
+        possibleMovies.forEach {
+            it.setType(CellView.EMPTY)
+        }
+        possibleMovies.clear()
+        takeCandidates.clear()
+    }
+
+    private fun possibleTakes(id: Int, candidates: MutableSet<CellView>){
+        checkTake(id, 9, candidates.toMutableSet())
+        checkTake(id, 11, candidates.toMutableSet())
+        checkTake(id, -9, candidates.toMutableSet())
+        checkTake(id, -11, candidates.toMutableSet())
+    }
+
+    private fun checkTake(id: Int, pushSize: Int, candidates: MutableSet<CellView>){
+        gameMap[id + pushSize]?.let { enemyCell ->
+            if (enemyCell.getType() != CellView.EMPTY && enemyCell.getPlayer() != data.currentPlayer){
+                val emptyId = id + pushSize + pushSize
+                gameMap[emptyId]?.let { emptyCell ->
+                    if (emptyCell.getType() == CellView.EMPTY){
+
+                        emptyCell.setType(CellView.MOVE)
+                        possibleMovies.add(emptyCell)
+                        candidates.add(enemyCell)
+                        takeCandidates[emptyId] = candidates
+
+                        possibleTakes(emptyId, candidates)
+                    }
+                }
+            }
         }
     }
 
@@ -67,18 +102,26 @@ class Checkerboard(
         }
     }
 
-    private fun clearMoves() {
-        possibleMovies.forEach {
-            it.setType(CellView.EMPTY)
-        }
-        possibleMovies.clear()
-    }
-
     fun stepQueen(id: Int, type: Int){
 
     }
 
     override fun move(id: Int){
+        //remove enemies
+        takeCandidates[id]?.let {
+            it.forEach { cell ->
+                cell.setType(CellView.EMPTY)
+
+                if (data.currentPlayer == CellView.BLACK_PLAYER)
+                    data.whiteCount --
+                else data.blackCount --
+            }
+        }
+
+        data.currentPlayer =
+            if (data.currentPlayer == CellView.BLACK_PLAYER) CellView.WHITE_PLAYER
+            else CellView.BLACK_PLAYER
+
         clearMoves()
 
         // move cell
@@ -89,11 +132,7 @@ class Checkerboard(
             targetPosition = NO_ITEM
         }
 
-        data.currentPlayer =
-            if (data.currentPlayer == CellView.BLACK_PLAYER) CellView.WHITE_PLAYER
-            else CellView.BLACK_PLAYER
     }
-
 
     companion object{
         const val NO_ITEM = -1
