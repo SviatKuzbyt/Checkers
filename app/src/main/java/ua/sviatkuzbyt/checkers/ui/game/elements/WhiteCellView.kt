@@ -1,15 +1,10 @@
 package ua.sviatkuzbyt.checkers.ui.game.elements
 
 import android.content.Context
-import android.util.AttributeSet
 import android.view.View
-import androidx.core.content.ContextCompat
 import ua.sviatkuzbyt.checkers.R
 
-class WhiteCellView: View {
-    constructor(context: Context): super(context)
-    constructor(context: Context, attrs: AttributeSet): super(context, attrs)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int): super(context, attrs, defStyleAttr)
+class WhiteCellView(context: Context) : View(context) {
 
     init {
         setBackgroundResource(R.drawable.cell_white_empty)

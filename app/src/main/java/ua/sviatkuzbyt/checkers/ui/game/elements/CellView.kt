@@ -4,13 +4,13 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import ua.sviatkuzbyt.checkers.R
+import ua.sviatkuzbyt.checkers.data.elements.CellData
 import ua.sviatkuzbyt.checkers.ui.game.CellAction
 
 @SuppressLint("ViewConstructor")
 class CellView(
     context: Context,
-    private var type: Int,
-    var cellId: Int,
+    private val data: CellData,
     private var action: CellAction
 ) : View(context) {
 
@@ -21,10 +21,10 @@ class CellView(
 
     private fun setClick(){
         setOnClickListener {
-            when(type){
-                WHITE_CHECKER -> action.whiteStep(cellId)
-                BLACK_CHECKER -> action.blackStep(cellId)
-                MOVE -> action.setMove(cellId)
+            when(data.type){
+                WHITE_CHECKER -> action.step(data.id, WHITE_PLAYER, -9, -11)
+                BLACK_CHECKER -> action.step(data.id, BLACK_PLAYER, 9, 11)
+                MOVE -> action.move(data.id)
             }
         }
     }
@@ -34,13 +34,13 @@ class CellView(
     }
 
     fun setType(type: Int){
-        this.type = type
+        data.type = type
         setBackground()
         invalidate()
     }
 
     private fun setBackground(){
-        when(type){
+        when(data.type){
             EMPTY -> setBackgroundResource(R.drawable.cell_black_empty)
             MOVE -> setBackgroundResource(R.drawable.cell_move)
             WHITE_CHECKER -> setBackgroundResource(R.drawable.cell_whie)
@@ -50,7 +50,7 @@ class CellView(
         }
     }
 
-    fun getType() = type
+    fun getType() = data.type
 
     companion object{
         const val EMPTY = 1
@@ -59,5 +59,7 @@ class CellView(
         const val BLACK_CHECKER = 4
         const val WHITE_QUEEN = 5
         const val BLACK_QUEEN = 6
+        const val WHITE_PLAYER = 7
+        const val BLACK_PLAYER = 8
     }
 }
