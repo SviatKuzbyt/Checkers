@@ -25,6 +25,8 @@ class CellView(
                 WHITE_CHECKER -> action.step(data.id, WHITE_PLAYER, -9, -11)
                 BLACK_CHECKER -> action.step(data.id, BLACK_PLAYER, 9, 11)
                 MOVE -> action.move(data.id)
+                WHITE_QUEEN -> action.stepQueen(data.id, WHITE_PLAYER)
+                BLACK_QUEEN -> action.stepQueen(data.id, BLACK_PLAYER)
             }
         }
     }

@@ -102,8 +102,42 @@ class Checkerboard(
         }
     }
 
-    fun stepQueen(id: Int, type: Int){
+    override fun stepQueen(id: Int, type: Int){
+        if (type == data.currentPlayer){
+            clearMoves()
+            targetPosition = id
 
+            possibleQueenSteps(id, 9, mutableSetOf())
+            possibleQueenSteps(id, 11, mutableSetOf())
+            possibleQueenSteps(id, -9, mutableSetOf())
+            possibleQueenSteps(id, -11, mutableSetOf())
+        }
+    }
+
+    private fun possibleQueenSteps(id: Int, pushSize: Int, candidates: MutableSet<CellView>){
+        val nextId = id+pushSize
+        gameMap[nextId]?.let { nextCell ->
+            if (nextCell.getType() == CellView.EMPTY){
+                nextCell.setType(CellView.MOVE)
+                possibleMovies.add(nextCell)
+                takeCandidates[nextId] = candidates
+                possibleQueenSteps(nextId, pushSize, candidates.toMutableSet())
+            }
+            else if(nextCell.getPlayer() != data.currentPlayer){
+                val nextEnemyId = nextId + pushSize
+                gameMap[nextEnemyId]?.let { emptyCell ->
+                    if (emptyCell.getType() == CellView.EMPTY){
+                        emptyCell.setType(CellView.MOVE)
+                        possibleMovies.add(emptyCell)
+                        candidates.add(nextCell)
+                        takeCandidates[nextEnemyId] = candidates
+                        possibleTakes(nextEnemyId, candidates.toMutableSet())
+                        possibleQueenSteps(nextEnemyId, pushSize, candidates)
+                    }
+                }
+
+            }
+        }
     }
 
     override fun move(id: Int){
@@ -118,19 +152,27 @@ class Checkerboard(
             }
         }
 
-        data.currentPlayer =
-            if (data.currentPlayer == CellView.BLACK_PLAYER) CellView.WHITE_PLAYER
-            else CellView.BLACK_PLAYER
 
         clearMoves()
 
         // move cell
-        gameMap[targetPosition]?.let {
-            gameMap[id]?.setType(it.getType())
+        gameMap[targetPosition]?.let { oldCell ->
+            gameMap[id]?.let{ newCell ->
+                if (id-8 < 11 && data.currentPlayer == CellView.WHITE_PLAYER)
+                    newCell.setType(CellView.WHITE_QUEEN)
+                else if(id+8 > 88 && data.currentPlayer == CellView.BLACK_PLAYER)
+                    newCell.setType(CellView.BLACK_QUEEN)
+                else
+                    newCell.setType(oldCell.getType())
+            }
 
-            it.setType(CellView.EMPTY)
+            oldCell.setType(CellView.EMPTY)
             targetPosition = NO_ITEM
         }
+
+        data.currentPlayer =
+            if (data.currentPlayer == CellView.BLACK_PLAYER) CellView.WHITE_PLAYER
+            else CellView.BLACK_PLAYER
 
     }
 
