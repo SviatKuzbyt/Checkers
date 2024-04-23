@@ -1,4 +1,4 @@
-package ua.sviatkuzbyt.checkers.data.elements
+package ua.sviatkuzbyt.checkers.game.elements
 
 data class CellData(
     var type: Int,

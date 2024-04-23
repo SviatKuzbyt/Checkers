@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.game.GameActivity"
+    tools:context=".game.activity.GameActivity"
     android:background="?attr/backgroundColor">
 
     <FrameLayout
@@ -21,13 +21,13 @@
             android:background="@drawable/ic_back"/>
 
         <TextView
+            android:id="@+id/playerText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/BlueText"
-            android:text="@string/playerOne"
             android:layout_gravity="center"
             android:layout_marginHorizontal="48dp"
-            android:id="@+id/playerText"/>
+            android:text="@string/playerOne"
+            android:textAppearance="@style/BlueText" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:layout_width="48dp"

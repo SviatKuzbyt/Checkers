@@ -1,4 +1,4 @@
-package ua.sviatkuzbyt.checkers.ui
+package ua.sviatkuzbyt.checkers
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,28 +6,22 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import ua.sviatkuzbyt.checkers.data.SaveGameFileManager
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.withContext
 import ua.sviatkuzbyt.checkers.databinding.ActivityMainBinding
-import ua.sviatkuzbyt.checkers.ui.game.GameActivity
-
-var isResumeGame: Boolean? = null
+import ua.sviatkuzbyt.checkers.game.activity.GameActivity
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    //Запуск діяльності і прив'язування інтерфейу до коду
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //Встановлення UI
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //Чи є збережена гра
-        if (isResumeGame == null){
-            isResumeGame = SaveGameFileManager(this).isExist()
-        }
-
-        //Встановлення функціоналу кнопок
         binding.newGameButton.setOnClickListener {
             openGameActivity(false)
         }
@@ -38,18 +32,18 @@ class MainActivity : AppCompatActivity() {
 
     private fun openGameActivity(resumeGame: Boolean){
         val intent = Intent(this, GameActivity::class.java)
-        if (resumeGame) intent.putExtra("rg", true)
+        if (resumeGame) intent.putExtra("loadFile", true)
         startActivity(intent)
     }
 
+    //Перевірка наявності збереженої гри при запуску і поверненні до діяльності
     override fun onResume() {
         super.onResume()
-
-        //Встановлення кнопки "Відновлення гри"
+        val isResumeGame = SaveGameFileManager.isExistsSaveGame(this)
         binding.resumeGameButton.also {
-            if (isResumeGame == true && it.isGone)
+            if (isResumeGame && it.isGone)
                 it.visibility = View.VISIBLE
-            else if(isResumeGame == false && it.isVisible)
+            else if(!isResumeGame && it.isVisible)
                 it.visibility = View.GONE
         }
     }

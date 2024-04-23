@@ -1,25 +1,25 @@
-package ua.sviatkuzbyt.checkers.ui.game.elements
+package ua.sviatkuzbyt.checkers.game.checkerboard
 
 import android.content.Context
 import android.widget.TableLayout
 import android.widget.TableRow
-import ua.sviatkuzbyt.checkers.data.elements.GameData
-import ua.sviatkuzbyt.checkers.ui.game.CellAction
+import ua.sviatkuzbyt.checkers.game.elements.CellAction
+import ua.sviatkuzbyt.checkers.game.elements.GameAction
+import ua.sviatkuzbyt.checkers.game.elements.GameData
 
 class Checkerboard(
     private val table: TableLayout,
     private val data: GameData,
-    private val context: Context
+    private val context: Context,
+    private val action: GameAction
 ): CellAction {
 
     private val gameMap = hashMapOf<Int, CellView>()
-    private var possibleMovies = mutableListOf<CellView>()
-    private var targetPosition = NO_ITEM
+    private var possibleMovies = mutableSetOf<CellView>()
+    private var targetPosition = -1
     private val takeCandidates = hashMapOf<Int, MutableSet<CellView>>()
 
-    init {
-        createTable()
-    }
+    init { createTable() }
 
     private fun createTable() {
         var position = 0
@@ -48,6 +48,7 @@ class Checkerboard(
         }
     }
 
+    //перевірка можливих ходів на сусідні клітинки так і на побиття шашок
     override fun step(id: Int, type: Int, pushSizeOne: Int, pushSizeTwo: Int){
         if (type == data.currentPlayer){
             clearMoves()
@@ -59,6 +60,7 @@ class Checkerboard(
         }
     }
 
+    //перед кожною дією очищаємо всі дані та перегляди
     private fun clearMoves() {
         possibleMovies.forEach {
             it.setType(CellView.EMPTY)
@@ -67,6 +69,7 @@ class Checkerboard(
         takeCandidates.clear()
     }
 
+    //перевірка чи можна побити шашку
     private fun possibleTakes(id: Int, candidates: MutableSet<CellView>){
         checkTake(id, 9, candidates.toMutableSet())
         checkTake(id, 11, candidates.toMutableSet())
@@ -75,17 +78,21 @@ class Checkerboard(
     }
 
     private fun checkTake(id: Int, pushSize: Int, candidates: MutableSet<CellView>){
+        //якщо наступна клітинка - ворог
         gameMap[id + pushSize]?.let { enemyCell ->
             if (enemyCell.getType() != CellView.EMPTY && enemyCell.getPlayer() != data.currentPlayer){
                 val emptyId = id + pushSize + pushSize
+                // і наступна, наступна - пуста
                 gameMap[emptyId]?.let { emptyCell ->
                     if (emptyCell.getType() == CellView.EMPTY){
 
+                        //позначаємо можливй хід, зберігаєм його
                         emptyCell.setType(CellView.MOVE)
                         possibleMovies.add(emptyCell)
                         candidates.add(enemyCell)
                         takeCandidates[emptyId] = candidates
 
+                        //перевіряємо чи можна побити ще шашки
                         possibleTakes(emptyId, candidates)
                     }
                 }
@@ -117,12 +124,14 @@ class Checkerboard(
     private fun possibleQueenSteps(id: Int, pushSize: Int, candidates: MutableSet<CellView>){
         val nextId = id+pushSize
         gameMap[nextId]?.let { nextCell ->
+            //якщо клітинка пуста, додаєм можливий хід і перевіряємо наступну
             if (nextCell.getType() == CellView.EMPTY){
                 nextCell.setType(CellView.MOVE)
                 possibleMovies.add(nextCell)
                 takeCandidates[nextId] = candidates
                 possibleQueenSteps(nextId, pushSize, candidates.toMutableSet())
             }
+            //якщо на клітинці - ворог, то перевіряємо чи наступна пуста і наступні клітинки та ворогів
             else if(nextCell.getPlayer() != data.currentPlayer){
                 val nextEnemyId = nextId + pushSize
                 gameMap[nextEnemyId]?.let { emptyCell ->
@@ -135,13 +144,12 @@ class Checkerboard(
                         possibleQueenSteps(nextEnemyId, pushSize, candidates)
                     }
                 }
-
             }
         }
     }
 
     override fun move(id: Int){
-        //remove enemies
+        //прибираємо ворогів. які ми побили
         takeCandidates[id]?.let {
             it.forEach { cell ->
                 cell.setType(CellView.EMPTY)
@@ -152,10 +160,9 @@ class Checkerboard(
             }
         }
 
-
         clearMoves()
 
-        // move cell
+        //Переміщщаєм шашку на нову клітинку (і робимо її королевою за потреби)
         gameMap[targetPosition]?.let { oldCell ->
             gameMap[id]?.let{ newCell ->
                 if (id-8 < 11 && data.currentPlayer == CellView.WHITE_PLAYER)
@@ -165,18 +172,11 @@ class Checkerboard(
                 else
                     newCell.setType(oldCell.getType())
             }
-
             oldCell.setType(CellView.EMPTY)
-            targetPosition = NO_ITEM
+            targetPosition = -1
         }
 
-        data.currentPlayer =
-            if (data.currentPlayer == CellView.BLACK_PLAYER) CellView.WHITE_PLAYER
-            else CellView.BLACK_PLAYER
-
-    }
-
-    companion object{
-        const val NO_ITEM = -1
+        //повідомляємо діяльності, що ми зробили хід
+        action.playerMove()
     }
 }

@@ -5,7 +5,14 @@
     <string name="about">Курсовий проєкт Кузбита Святослава</string>
     <string name="logo_description">Логотип \"Шашки\"</string>
     <string name="close_the_game">Закрити гру</string>
-    <string name="give_up">Здатися</string>
+    <string name="give_up">Здатися?</string>
     <string name="playerOne">Хід 1 гравця</string>
     <string name="playerTwo">Хід 2 гравця</string>
+    <string name="yes">Так</string>
+    <string name="no">Ні</string>
+    <string name="ok">Добре</string>
+    <string name="win_one">Переміг 1 гравець!</string>
+    <string name="win_two">Переміг 2 гравець!</string>
+    <string name="error_read">Не вдалося завантажити гру</string>
+    <string name="error_save">Не можливо зберегт гру</string>
 </resources>

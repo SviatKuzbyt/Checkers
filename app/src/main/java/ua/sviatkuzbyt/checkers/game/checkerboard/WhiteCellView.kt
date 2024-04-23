@@ -1,4 +1,4 @@
-package ua.sviatkuzbyt.checkers.ui.game.elements
+package ua.sviatkuzbyt.checkers.game.checkerboard
 
 import android.content.Context
 import android.view.View

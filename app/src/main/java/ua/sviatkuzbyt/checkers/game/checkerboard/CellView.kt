@@ -1,11 +1,11 @@
-package ua.sviatkuzbyt.checkers.ui.game.elements
+package ua.sviatkuzbyt.checkers.game.checkerboard
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
+import ua.sviatkuzbyt.checkers.game.elements.CellAction
+import ua.sviatkuzbyt.checkers.game.elements.CellData
 import ua.sviatkuzbyt.checkers.R
-import ua.sviatkuzbyt.checkers.data.elements.CellData
-import ua.sviatkuzbyt.checkers.ui.game.CellAction
 
 @SuppressLint("ViewConstructor")
 class CellView(
@@ -31,6 +31,7 @@ class CellView(
         }
     }
 
+    //Встановлення квадратної форми відрисовки
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
     }
