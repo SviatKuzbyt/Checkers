@@ -15,18 +15,11 @@ class SaveGameFileManager(context: Context) {
     private val file = File(context.filesDir, "saveGame.txt")
     private val gson = Gson()
 
-    fun getSavedData(): GameData {
-        val data: GameData = FileReader(file).use { reader ->
-                val type: Type = object : TypeToken<GameData>() {}.type
-                gson.fromJson(reader, type)
-            }
-
-        //очищення тможливих ходів, щоб запобігти помилок
-        data.cells.forEach {
-            if (it.type == CellView.MOVE) it.type = CellView.EMPTY
+    fun getSavedData(): GameData =
+        FileReader(file).use { reader ->
+            val type: Type = object : TypeToken<GameData>() {}.type
+            gson.fromJson(reader, type)
         }
-        return data
-    }
 
     fun getNewData() = GameData(
         CellView.WHITE_PLAYER,
@@ -87,7 +80,5 @@ class SaveGameFileManager(context: Context) {
         file.delete()
     }
 
-    companion object{
-        fun isExistsSaveGame(context: Context) = File(context.filesDir, "saveGame.txt").exists()
-    }
+    fun isExists() = file.exists()
 }

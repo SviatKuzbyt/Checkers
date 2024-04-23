@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ua.sviatkuzbyt.checkers.game.elements.GameData
 import ua.sviatkuzbyt.checkers.SaveGameFileManager
+import ua.sviatkuzbyt.checkers.isResumeGame
 
 class GameViewModel(application: Application, private val loadFile: Boolean): AndroidViewModel(application) {
     private lateinit var data: GameData
@@ -34,19 +35,25 @@ class GameViewModel(application: Application, private val loadFile: Boolean): An
         dataLiveData.postValue(data)
     }
 
-    fun saveData() = viewModelScope.launch(Dispatchers.IO){
+    fun saveData(){
         if (message.value != FINISH){
-            try {
-                fileManager.saveData(data)
-            } catch (_: Exception){
-                message.postValue(ERROR_SAVE)
+            isResumeGame = true
+            viewModelScope.launch(Dispatchers.IO){
+                try {
+                    fileManager.saveData(data)
+                } catch (_: Exception){
+                    message.postValue(ERROR_SAVE)
+                }
             }
         }
     }
 
-    fun finishGame() = viewModelScope.launch(Dispatchers.IO){
-        fileManager.deleteFile()
-        message.postValue(FINISH)
+    fun finishGame(){
+        isResumeGame = false
+        viewModelScope.launch(Dispatchers.IO){
+            fileManager.deleteFile()
+            message.postValue(FINISH)
+        }
     }
 
     fun getPlayer() =

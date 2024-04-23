@@ -6,10 +6,10 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.withContext
 import ua.sviatkuzbyt.checkers.databinding.ActivityMainBinding
 import ua.sviatkuzbyt.checkers.game.activity.GameActivity
+
+var isResumeGame: Boolean? = null
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,12 +39,19 @@ class MainActivity : AppCompatActivity() {
     //Перевірка наявності збереженої гри при запуску і поверненні до діяльності
     override fun onResume() {
         super.onResume()
-        val isResumeGame = SaveGameFileManager.isExistsSaveGame(this)
-        binding.resumeGameButton.also {
-            if (isResumeGame && it.isGone)
-                it.visibility = View.VISIBLE
-            else if(!isResumeGame && it.isVisible)
-                it.visibility = View.GONE
+        binding.resumeGameButton.apply {
+            when(isResumeGame){
+                null -> checkSaveGame()
+                true -> if(isGone) visibility = View.VISIBLE
+                false -> if(isVisible) visibility = View.GONE
+            }
         }
+    }
+
+    private fun checkSaveGame(){
+        if (SaveGameFileManager(this).isExists()){
+            binding.resumeGameButton.visibility = View.VISIBLE
+            isResumeGame = true
+        } else isResumeGame = false
     }
 }

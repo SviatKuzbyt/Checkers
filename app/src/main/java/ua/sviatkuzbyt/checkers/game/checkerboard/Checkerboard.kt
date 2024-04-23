@@ -29,7 +29,11 @@ class Checkerboard(
             val tableRow = TableRow(context)
 
             repeat(4) {
+                if (data.cells[position].type == CellView.MOVE)
+                    data.cells[position].type = CellView.EMPTY
+
                 val cell = CellView(context, data.cells[position], this)
+
                 gameMap[data.cells[position].id] = cell
 
                 if (isFirstWhite){
@@ -47,7 +51,6 @@ class Checkerboard(
             isFirstWhite = !isFirstWhite
         }
     }
-
     //перевірка можливих ходів на сусідні клітинки так і на побиття шашок
     override fun step(id: Int, type: Int, pushSizeOne: Int, pushSizeTwo: Int){
         if (type == data.currentPlayer){
